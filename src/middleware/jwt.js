@@ -18,9 +18,9 @@ const verifyToken = (req, res, next) => {
     return next();
 };
 
-const generateToken = (userId) => {
+const generateToken = (userId, role) => {
     return {
-        accessToken: jwt.sign({ id: userId }, config.jwt.SECRET_KEY, {
+        accessToken: jwt.sign({ id: userId, role: role }, config.jwt.SECRET_KEY, {
             algorithm: 'HS256',
             expiresIn: config.jwt.EXPIRES_IN
         }), expiresIn: config.jwt.EXPIRES_IN
