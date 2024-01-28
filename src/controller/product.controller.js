@@ -1,8 +1,8 @@
 
-const getGroceryList = async (req, res) => {
+const getProductList = async (req, res) => {
     res.status(200).send("getGroceryList");
 }
 
 module.exports = {
-    getGroceryList
+    getProductList
 }

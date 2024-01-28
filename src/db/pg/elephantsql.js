@@ -1,8 +1,16 @@
-const pg = require('pg');
+const {Client} = require('pg');
 const fs = require('fs');
 const path = require('path');
 const config = require('../../config/config');
-const pgClient = new pg.Client(config.pgConfig.HOST)
+
+const pgClient = new Client({
+    host: config.pgConfig.HOST,
+    port: config.pgConfig.PORT,
+    database: config.pgConfig.SCHEMA,
+    user: config.pgConfig.USER,
+    password: config.pgConfig.PASSWORD,
+  })
+
 
 module.exports = {
     connectDB: async () => {

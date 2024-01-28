@@ -29,7 +29,7 @@ app.get('/health', (req, res) => {
 
 const startServer = async () => {
     await promisify(app.listen).bind(app)(port);
-    //await initialize.startConnections();
+    await initialize.startConnections();
     console.log(`App is Running at Port ${port}`)
 }
 
