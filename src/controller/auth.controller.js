@@ -3,7 +3,7 @@ const jwt = require('../middleware/jwt');
 
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
-    const userData = await authService.getUserDataByUsername(username);//check user exists in db
+    const userData = await authService.getUserDataByUsernameOrEmail(username);//check user exists in db
     if (userData) {
         let verfiyPassword = await authService.validatedPassword(password, userData.user_id);
         if (verfiyPassword) {

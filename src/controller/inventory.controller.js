@@ -1,5 +1,8 @@
+const inventoryService = require('../services/inventory.service');
+
 const getInventoryList = async (req, res) => {
-    res.status(200).send("getInventoryList");
+    let inventoryList = await inventoryService.getInventoryList();
+    res.status(200).send(inventoryList);
 }
 
 module.exports = {
