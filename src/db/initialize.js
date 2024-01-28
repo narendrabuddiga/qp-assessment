@@ -12,7 +12,7 @@ module.exports = {
         }
         if (config.pgConfig.ENABLE) {
             await elephantsql.connectDB();
-            await elephantsql.executeScripts();
+           // await elephantsql.executeScripts();
         }
     }
 }
