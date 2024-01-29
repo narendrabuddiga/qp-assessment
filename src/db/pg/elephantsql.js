@@ -2,11 +2,11 @@ const {Client} = require('pg');
 const fs = require('fs');
 const path = require('path');
 const config = require('../../config/config');
-
+//SCHEMA: 'supply_management',
 const pgClient = new Client({
     host: config.pgConfig.HOST,
     port: config.pgConfig.PORT,
-    database: config.pgConfig.SCHEMA,
+    database: config.pgConfig.DATABASE,
     user: config.pgConfig.USER,
     password: config.pgConfig.PASSWORD,
   })

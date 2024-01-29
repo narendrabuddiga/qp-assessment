@@ -1,9 +1,9 @@
-const pg = require('../../db/pg/elephantsql');
+const db = require('../db/pg/elephantsql');
 
 
 const getProductList = async () => {
-    let query = `SELECT * FROM products`;
-    let response = await pg.query(query);
+    let query = `SELECT * FROM supply_management.products`;
+    let response = await db.query(query);
     return response;
 }
 

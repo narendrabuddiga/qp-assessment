@@ -1,6 +1,6 @@
 module.exports = {
   database_url: process.env.DATABASE_URL,
-  PORT: process.env.DEV_PORT || 8080,
+  PORT: process.env.DEV_PORT,
   jwt: {
     SECRET_KEY: process.env.JWT_SECRET_KEY,
     EXPIRES_IN: process.env.JWT_EXPIRES_IN
@@ -10,7 +10,7 @@ module.exports = {
     HOST: process.env.PG_HOST,
     USER: process.env.PG_USER,
     PASSWORD: process.env.PG_PASSWORD,
-    SCHEMA: 'supply_management',
+    DATABASE: process.env.PG_DATABASE,
     PORT: process.env.PG_PORT,
   },
   redisConfig: {
