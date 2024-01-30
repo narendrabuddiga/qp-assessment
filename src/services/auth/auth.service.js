@@ -1,18 +1,14 @@
 const bcrypt = require("bcrypt");
-const pg = require('../../db/pg/elephantsql');
+const db = require('../../db/pg/elephantsql');
 
 const registerUser = async (payload) => {
     let response = false;
-    const {firstname, lastname, password,
+    const { firstname, lastname, password,
         gender, location, mobileNo, email } = payload;
     //encrypt password
     const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
-    const ifUserNameExist = await getUserDataByUsernameOrEmail(email);
-    if (ifUserNameExist) {
-        return response;
-    }
 
-    const client = pg.pgClient();
+    const client = db.dbClient();
     try {
         await client.query('BEGIN')
 
@@ -43,21 +39,14 @@ const registerUser = async (payload) => {
 
 const getUserDataByUsernameOrEmail = async (email) => {
     let query = `SELECT * FROM supply_management.users WHERE username= '${email}'`
-    let userData = await pg.findOne(query);
+    let userData = await db.findOne(query);
     return userData
 }
 
-const createUser = async (payload) => {
-    const { username, firstname, lastname, password, gender, location, mobileNo } = payload;
-    let insertUser = `INSERT INTO supply_management.users(USERNAME,FIRSTNAME,LASTNAME,GENDER) 
-    VALUE (${username},${firstname},${lastname},${gender})`;
-    let userData = await pgClient.findOne(query);
-    return userData
-}
 
 const validatedPassword = async (password, userId) => {
     let userSecretQuery = `SELECT * FROM supply_management.user_secrets WHERE user_id= '${userId}'`
-    let userSecret = await pg.findOne(userSecretQuery);
+    let userSecret = await db.findOne(userSecretQuery);
     return await bcrypt.compare(password, userSecret.passkey)
 }
 

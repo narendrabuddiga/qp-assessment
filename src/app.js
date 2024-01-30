@@ -8,7 +8,6 @@ const port = config.PORT || 8000;
 const router = require('./routes/index');
 const initialize = require('./db/initialize');
 
-
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
