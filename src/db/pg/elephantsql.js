@@ -61,6 +61,19 @@ module.exports = {
                 resolve(data && data.length > 0 ? data[0] : null);
             });
         })
-    }, pgClient: () => pgClient,
+    },
+    findAll: async (query) => {
+        return new Promise((resolve, reject) => {
+            pgClient.query(query, (err, result) => {
+                if (err) {
+                    console.error('error running query', err);
+                    reject(err);
+                }
+                let data = result?.rows
+                resolve(data);
+            });
+        })
+    },
+     dbClient: () => pgClient,
 
 }

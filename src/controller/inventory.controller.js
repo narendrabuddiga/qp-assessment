@@ -5,6 +5,16 @@ const getInventoryList = async (req, res) => {
     res.status(200).send(inventoryList);
 }
 
+const addInventory = async (req, res) => {
+    let inventoryList = await inventoryService.getInventoryList();
+    res.status(200).send(inventoryList);
+}
+
+const updateInventory = async (req, res) => {
+    let inventoryList = await inventoryService.getInventoryList();
+    res.status(200).send(inventoryList);
+}
+
 module.exports = {
-    getInventoryList
+    getInventoryList, addInventory, updateInventory
 }

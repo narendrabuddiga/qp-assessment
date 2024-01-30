@@ -1,6 +1,6 @@
 module.exports = {
   database_url: process.env.DATABASE_URL,
-  PORT: process.env.DEV_PORT,
+  PORT: process.env.DEV_PORT||8080,
   jwt: {
     SECRET_KEY: process.env.JWT_SECRET_KEY,
     EXPIRES_IN: process.env.JWT_EXPIRES_IN
