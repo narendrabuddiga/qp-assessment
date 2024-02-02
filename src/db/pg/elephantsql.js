@@ -74,6 +74,18 @@ module.exports = {
             });
         })
     },
+    updateOne: async (query) => {
+        return new Promise((resolve, reject) => {
+            pgClient.query(query, (err, result) => {
+                if (err) {
+                    console.error('error running query', err);
+                    reject(err);
+                }
+                let data = result?.rows
+                resolve(data);
+            });
+        })
+    },
      dbClient: () => pgClient,
 
 }

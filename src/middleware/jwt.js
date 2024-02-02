@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
-
+const bcrypt = require("bcrypt");
 const config = require('../config/config');
+
+const ADMIN_ROLE = "ADMIN_ROLE";
 
 const verifyToken = (req, res, next) => {
     const token = extractToken(req);
@@ -35,4 +37,19 @@ const generateToken = (userId, role) => {
     }
 }
 
-module.exports = { verifyToken, generateToken };
+const isAdmin = async (req, res, next) => {
+    let userRole = req.user.role
+    !ADMIN_ROLE.includes(userRole)
+        ? res.status(401).json("Sorry you do not have access to this route")
+        : next();
+};
+
+const generatePassword = async (password) => {
+    return await bcrypt.hash(password, await bcrypt.genSalt(10))
+}
+
+const verfiyPassword = async (password, existingPassKey) => {
+    return await bcrypt.compare(password, existingPassKey)
+}
+
+module.exports = { verifyToken, generateToken, isAdmin, verfiyPassword, generatePassword };

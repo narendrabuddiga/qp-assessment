@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const auth = require('../../middleware/jwt');
 const db = require('../../db/pg/elephantsql');
 
 const registerUser = async (payload) => {
@@ -6,7 +6,7 @@ const registerUser = async (payload) => {
     const { firstname, lastname, password,
         gender, location, mobileNo, email } = payload;
     //encrypt password
-    const hashedPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
+    const hashedPassword = await auth.generatePassword(password)
 
     const client = db.dbClient();
     try {
@@ -26,7 +26,7 @@ const registerUser = async (payload) => {
         }
         //roles
         let insertUserRole = `INSERT INTO supply_management.user_roles (USER_ID,ROLE_TYPE) VALUES($1,$2)`
-        let userRoles = [user.rows[0].user_id, "USER_ROLE"];
+        let userRoles = [user.rows[0].user_id, "ADMIN_ROLE"];
         await client.query(insertUserRole, userRoles)
         await client.query('COMMIT');
         response = true;
@@ -38,7 +38,9 @@ const registerUser = async (payload) => {
 }
 
 const getUserDataByUsernameOrEmail = async (email) => {
-    let query = `SELECT * FROM supply_management.users WHERE username= '${email}'`
+    let query = `SELECT * FROM supply_management.users u 
+     LEFT JOIN supply_management.user_roles ur on u.user_id=ur.user_id
+      WHERE u.username= '${email}'`
     let userData = await db.findOne(query);
     return userData
 }
@@ -47,7 +49,7 @@ const getUserDataByUsernameOrEmail = async (email) => {
 const validatedPassword = async (password, userId) => {
     let userSecretQuery = `SELECT * FROM supply_management.user_secrets WHERE user_id= '${userId}'`
     let userSecret = await db.findOne(userSecretQuery);
-    return await bcrypt.compare(password, userSecret.passkey)
+    return await auth.verfiyPassword(password, userSecret.passkey);
 }
 
 

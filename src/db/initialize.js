@@ -7,12 +7,12 @@ const elephantsql = require('./pg/elephantsql');
 
 module.exports = {
     startConnections: async () => {
-        if (config.redisConfig.ENABLE) {''
+        if (config.redisConfig.ENABLE) {
             await redis.connectRedis();
         }
         if (config.pgConfig.ENABLE) {
             await elephantsql.connectDB();
-          //  await elephantsql.executeScripts();
+            await elephantsql.executeScripts();
         }
     }
 }

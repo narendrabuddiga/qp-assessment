@@ -7,7 +7,7 @@ const loginUser = async (req, res) => {
     if (userData) {
         let verfiyPassword = await authService.validatedPassword(password, userData.user_id);
         if (verfiyPassword) {
-            const token = jwt.generateToken(userData.username)
+            const token = jwt.generateToken(userData.user_id,userData.role_type)
             let response = {...token}
             res.status(200).send(response);
         } else {
