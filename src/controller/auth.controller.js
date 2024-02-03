@@ -7,8 +7,8 @@ const loginUser = async (req, res) => {
     if (userData) {
         let verfiyPassword = await authService.validatedPassword(password, userData.user_id);
         if (verfiyPassword) {
-            const token = jwt.generateToken(userData.user_id,userData.role_type)
-            let response = {...token}
+            const token = jwt.generateToken(userData.user_id, userData.role_type)
+            let response = { ...token }
             res.status(200).send(response);
         } else {
             res.status(400).send('Invalid Username or Password');
@@ -23,7 +23,8 @@ const registerUser = async (req, res) => {
     if (ifUserNameExist) {
         res.status(200).send("User or email already registered");
     } else {
-        let response = await authService.registerUser(req.body);
+        let userRoleType = req.originalUrl.includes('admin') ? "ADMIN_ROLE" : "CUSTOMER";
+        let response = await authService.registerUser(req.body, userRoleType);
         if (response) {
             res.status(200).send("User Registered Successfully");
         } else {

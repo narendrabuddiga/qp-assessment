@@ -1,7 +1,7 @@
 const auth = require('../../middleware/jwt');
 const db = require('../../db/pg/elephantsql');
 
-const registerUser = async (payload) => {
+const registerUser = async (payload,userRoleType) => {
     let response = false;
     const { firstname, lastname, password,
         gender, location, mobileNo, email } = payload;
@@ -26,7 +26,7 @@ const registerUser = async (payload) => {
         }
         //roles
         let insertUserRole = `INSERT INTO supply_management.user_roles (USER_ID,ROLE_TYPE) VALUES($1,$2)`
-        let userRoles = [user.rows[0].user_id, "ADMIN_ROLE"];
+        let userRoles = [user.rows[0].user_id, userRoleType];
         await client.query(insertUserRole, userRoles)
         await client.query('COMMIT');
         response = true;
