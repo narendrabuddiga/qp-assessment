@@ -27,8 +27,12 @@ const addInventory = async (req, res) => {
 const updateInventory = async (req, res) => {
     let inventoryExistsInDb = await inventoryService.getInventoryById(req.params.id);
     if (inventoryExistsInDb) {
-        let inventoryList = await inventoryService.updateInventoryById(req.body, req.params.id, req.user);
-        res.status(200).send(inventoryList);
+        let updatedInventoryRes = await inventoryService.updateInventoryById(req.body, req.params.id, req.user);
+        if (updatedInventoryRes.status === 'success') {
+            res.status(200).send(updatedInventoryRes);
+        } else {
+            res.status(500).send(updatedInventoryRes);
+        }
     } else {
         res.status(404).send("Inventory not found");
     }

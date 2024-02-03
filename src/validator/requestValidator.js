@@ -67,12 +67,33 @@ const updateInventoryValidate = (req, res, next) => {
     }
 
     const updateInventorySchema = Joi.object({
-        inventoryName: Joi.string().required(),
-        location: Joi.string().required(),
-        groceryIds: Joi.array().required()
-    }).or('inventoryName', 'location', 'groceryIds');
+        inventoryName: Joi.string(),
+        location: Joi.string(),
+        groceries: Joi.array().items({
+            id: Joi.number().required(),
+            quantity: Joi.number().required()
+        })
+    }).or('inventoryName', 'location', 'groceries');
 
     const { error } = updateInventorySchema.validate(req.body);
+    if (error) {
+        return res.status(400).send(error.details[0].message);
+    }
+
+    next();
+};
+
+const createOrderValidate = (req, res, next) => {
+
+    const createOrderSchema = Joi.object({
+        totalPrice: Joi.number().required(),
+        groceries: Joi.array().items({
+            id: Joi.number().required(),
+            quantity: Joi.number().required()
+        })
+    })
+
+    const { error } = createOrderSchema.validate(req.body);
     if (error) {
         return res.status(400).send(error.details[0].message);
     }
@@ -88,7 +109,7 @@ const addProductReqValidate = (req, res, next) => {
         unitName: Joi.string().required(),
         unitValue: Joi.number().required(),
         unitPrice: Joi.number().required(),
-        currency:Joi.string().required()
+        currency: Joi.string().required()
     });
 
     const { error } = addProductSchema.validate(req.body);
@@ -105,5 +126,6 @@ module.exports = {
     validateIdField,
     createInventory,
     updateInventoryValidate,
-    addProductReqValidate
+    addProductReqValidate,
+    createOrderValidate
 }
