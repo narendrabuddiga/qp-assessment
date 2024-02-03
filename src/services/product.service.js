@@ -1,8 +1,7 @@
-const { dbClient, findAll, findOne } = require('../db/pg/elephantsql');
-
+const { dbClient, findAll, findOne, updateOne } = require('../db/pg/elephantsql');
 
 const getProductList = async () => {
-    let query = `SELECT 
+  let query = `SELECT 
     p.product_id, 
     p.name, 
     p.type, 
@@ -20,15 +19,16 @@ const getProductList = async () => {
   FROM 
     supply_management.products p 
     LEFT OUTER JOIN supply_management.inventory_mapping invmap on invmap.product_id = p.product_id 
-    LEFT OUTER JOIN supply_management.inventories inv on inv.inventory_id = invmap.inventory_id 
+    LEFT OUTER JOIN supply_management.inventories inv on inv.inventory_id = invmap.inventory_id
+    WHERE p.is_deleted=false 
   GROUP BY 
     p.product_id `;
-    let response = await findAll(query);
-    return response;
+  let response = await findAll(query);
+  return response;
 }
 
 const getProductQuantityListByIds = async (ids) => {
-    let query = `SELECT 
+  let query = `SELECT 
     p.product_id, 
     p.name, 
     p.type, 
@@ -47,51 +47,64 @@ const getProductQuantityListByIds = async (ids) => {
     supply_management.products p 
     LEFT OUTER JOIN supply_management.inventory_mapping invmap on invmap.product_id = p.product_id 
     LEFT OUTER JOIN supply_management.inventories inv on inv.inventory_id = invmap.inventory_id 
-    WHERE p.product_id in (${ids.toString()})
+    WHERE p.product_id in (${ids.toString()}) and p.is_deleted=false
   GROUP BY 
     p.product_id`;
-    let productList = await findAll(query);
-    return productList;
+  let productList = await findAll(query);
+  return productList;
 }
 
 const getProductById = async (id) => {
-    let query = `SELECT * FROM supply_management.products where product_id=${id}`;
-    let response = await findOne(query);
-    return response;
+  let query = `SELECT * FROM supply_management.products where product_id=${id}`;
+  let response = await findOne(query);
+  return response;
 }
 
 const getProductListByIds = async (ids) => {
-    let query = `SELECT * FROM supply_management.products where product_id in (${ids.toString()})`;
-    let productList = await findAll(query);
-    return productList;
+  let query = `SELECT * FROM supply_management.products where product_id in (${ids.toString()})`;
+  let productList = await findAll(query);
+  return productList;
 }
 
 const addProduct = async (payload, user) => {
-    let response = {
-        status: "success"
-    };
-    const { name, type, description,
-        unitName, unitValue, unitPrice, currency } = payload;
-    const client = dbClient();
-    try {
-        await client.query('BEGIN')
-        let insertQuery = `INSERT INTO supply_management.products 
+  let response = {
+    status: "success"
+  };
+  const { name, type, description,
+    unitName, unitValue, unitPrice, currency } = payload;
+  const client = dbClient();
+  try {
+    await client.query('BEGIN')
+    let insertQuery = `INSERT INTO supply_management.products 
         (name,description,type,unit_name,unit_value,unit_price,currency,created_by) 
         VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING product_id`;
-        let values = [name, description, type, unitName, unitValue, unitPrice, currency, user.id];
-        let product = await client.query(insertQuery, values);
-        await client.query('COMMIT');
-        response.productId = product.rows[0]?.product_id;
-    } catch (error) {
-        console.error("Error:", error)
-        await client.query('ROLLBACK');
-        response.status = "failed";
-        response.message = error?.message;
-    }
-    return response;
+    let values = [name, description, type, unitName, unitValue, unitPrice, currency, user.id];
+    let product = await client.query(insertQuery, values);
+    await client.query('COMMIT');
+    response.productId = product.rows[0]?.product_id;
+  } catch (error) {
+    console.error("Error:", error)
+    await client.query('ROLLBACK');
+    response.status = "failed";
+    response.message = error?.message;
+  }
+  return response;
+}
+
+const removeProductById = async (id, userId) => {
+  if(await getProductById(id)){
+    return null;
+  }
+  let query = `UPDATE FROM supply_management.products 
+  SET IS_DELETED = true , updated_by =${userId} ,
+  updated_on= NOW()
+  where product_id = (${id})`;
+  let product = await updateOne(query);
+  return { status: 'success', 
+  message: `deleted successfully productId:${product.product_id}` };
 }
 
 
 module.exports = {
-    getProductList, addProduct, getProductById, getProductListByIds,getProductQuantityListByIds
+  getProductList, addProduct, getProductById, getProductListByIds, getProductQuantityListByIds, removeProductById
 }

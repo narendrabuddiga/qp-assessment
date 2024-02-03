@@ -1,4 +1,4 @@
-const { dbClient, findAll, findOne } = require('../db/pg/elephantsql');
+const { dbClient, findAll, findOne, updateOne } = require('../db/pg/elephantsql');
 const { getProductQuantityListByIds } = require('./product.service');
 const format = require('pg-format');
 
@@ -83,12 +83,27 @@ const getUserOrderList = async (user) => {
     return response;
 }
 
-const getUserOrderById = async (orderId) => {
+const getUserOrderById = async (orderId,user) => {
     let query = `SELECT * FROM supply_management.orders where order_id=${orderId} and user_id='${user.id}'`;
     let response = await findOne(query);
     return response;
 }
 
+const removeOrderById = async (id, userId) => {
+    if (await getUserOrderById(id)) {
+        return null
+    }
+    let query = `UPDATE FROM supply_management.orders 
+    SET IS_DELETED = true , updated_by =${userId} ,
+    updated_on= NOW()
+    where order_id = (${id})`;
+    let order = await updateOne(query);
+    return {
+        status: 'success',
+        message: `deleted successfully productId:${order.order_id}`
+    };
+}
+
 module.exports = {
-    createOrder, getUserOrderList, getUserOrderById
+    createOrder, getUserOrderList, getUserOrderById, removeOrderById
 }

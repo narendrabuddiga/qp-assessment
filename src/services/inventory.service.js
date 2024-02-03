@@ -128,6 +128,15 @@ const getInventoryMapping = async (inventoryId, productId) => {
     return inventoryMapping;
 }
 
+const removeInventoryById = async (id,userId) => {
+    let query = `UPDATE FROM supply_management.inventories 
+    SET IS_DELETED = true , updated_by =${userId} ,
+    updated_on= NOW()
+    where inventory_id = (${id})`;
+    let productList = await updateOne(query);
+    return productList;
+  }
+
 module.exports = {
-    getInventoryList, addInventory, getInventoryById, updateInventoryById
+    getInventoryList, addInventory, getInventoryById, updateInventoryById,removeInventoryById
 }

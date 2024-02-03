@@ -20,6 +20,11 @@ const getUserOrderById = async (req, res) => {
     res.status(200).send(response);
 }
 
+const removeUserOrderById = async (req, res) => {
+    let response = await orderService.removeOrderById(req.params.id,req.user);
+    res.status(200).send(response);
+}
+
 module.exports = {
-    createOrder, getUserOrderList, getUserOrderById
+    createOrder, getUserOrderList, getUserOrderById,removeUserOrderById
 }
